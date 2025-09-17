@@ -10,6 +10,11 @@ class RegisterSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['username' , 'password' , 'password2' , 'email'] # yesle chai register garna ko laagi serializer aafei banauxa hai ta.
+        extra_kwargs = {
+            'password':{
+                'write_only':True
+            }
+        }
         
     def validate(self , data):
         if data['password'] != data['password2']:
@@ -23,10 +28,6 @@ class RegisterSerializer(serializers.ModelSerializer):
             email = validated_data['email']
         )
         return user
-
-
-
-
 
 
 
