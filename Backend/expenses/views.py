@@ -12,6 +12,8 @@ from rest_framework import viewsets, permissions  # viewsets le chai CRUD operat
 
 
 class RegisterView(APIView):
+    authentication_classes = []
+    permission_classes = [permissions.AllowAny]
     def post(self, request):
         data = request.data
         serializer = RegisterSerializer(data=data)
@@ -31,13 +33,14 @@ class RegisterView(APIView):
                 {
                     "message":"Invalid",
                 },
-                serializer.error_messages,
+                serializer.errors,
                 status=status.HTTP_400_BAD_REQUEST
             )
 
 
 class LoginView(APIView):
-    permission_classes = []
+    authentication_classes = []
+    permission_classes = [permissions.AllowAny]
     
     def post(self , request):
         data = request.data
@@ -45,13 +48,13 @@ class LoginView(APIView):
         password = data['password']
         
         user = User.objects.filter(username=username).first()
-        if user and user.check_password(user):
+        if user and user.check_password(password):
             refresh = RefreshToken.for_user(user=user)
             return Response(
                 {
                     "message":"Data Validated Successfully",
-                    "access_token":refresh.access_token,
-                    "refresh_token":refresh
+                    "access_token":str(refresh.access_token),
+                    "refresh_token":str(refresh)
                 }
             )
         else:
@@ -61,9 +64,7 @@ class LoginView(APIView):
                 },
                 status=status.HTTP_400_BAD_REQUEST
             )
-
-# can we use function based views here? yes we can but class based views are more powerful and flexible for building APIs
-
+            
 
 class CategoryViewSet(viewsets.ModelViewSet):
     queryset = Categories.objects.all()  # yesle Categories model ko sabai instances lai query garxa
