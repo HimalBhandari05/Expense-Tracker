@@ -36,8 +36,23 @@ const Login = (className, ...props) => {
         setisLogin(false);
       }
 
+      const access = response.data.access ?? response.data.access_token;
+      const refresh = response.data.refresh ?? response.data.refresh_token;
+
+      if (access){
+        localStorage.setItem("access_token" , access)
+
+        axios.defaults.headers.common["Authorization"] =   `Bearer ${access}`
+      }
+      if (refresh){
+        localStorage.setItem("refresh_token" , refresh);
+      }
+      
       localStorage.setItem("access_token", response.data.access_token);
       localStorage.setItem("refresh_token", response.data.refresh_token);
+
+
+      console.log(localStorage)
 
       setisLogin(true); // temporary disable hunxa submit button.
 
