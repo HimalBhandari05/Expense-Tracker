@@ -47,9 +47,6 @@ const Login = (className, ...props) => {
       if (refresh){
         localStorage.setItem("refresh_token" , refresh);
       }
-      
-      localStorage.setItem("access_token", response.data.access_token);
-      localStorage.setItem("refresh_token", response.data.refresh_token);
 
 
       console.log(localStorage)
