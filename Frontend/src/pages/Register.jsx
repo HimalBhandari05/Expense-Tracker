@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import axios from "axios";
 
 // using the react hook form in here. useForm returns object not the array
 const Register = () => {
   const [isRegister, setIsRegister] = useState(false);
   const [isSubmitting, setisSubmitting] = useState(false);
+  const [isData, setisData] = useState({});
 
   const {
     register,
@@ -14,19 +16,27 @@ const Register = () => {
     formState: { errors, isSubmitted },
   } = useForm({ mode: "onSubmit" });
 
-  const onSubmit = (data) => {
+  const onSubmit = async (data) => {
     setisSubmitting(true);
-    setIsRegister(true);
     console.log(data);
+    setIsRegister(false);
 
-    setTimeout(() => {
-      setIsRegister(false);
-      reset();
-    }, 1000);
+    try {
+      const response = await axios.post('http://127.0.0.1:8000/api/register/' , data)
+      console.log("success" , response.data)
 
-    setTimeout(() => {
-      setisSubmitting(false)
-    }, 100);
+      setIsRegister(true);
+
+      setTimeout(() => {
+        setIsRegister(false);
+        reset();
+      }, 1000);
+    } catch (error) {
+      console.log(error);
+    }
+    finally{
+      setisSubmitting(false);
+    }
   };
 
   return (
@@ -140,10 +150,9 @@ const Register = () => {
               type="submit"
               className={`group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150 ease-in-out 
                 ${
-                  isSubmitting ?
-                  'bg-gray-400 cursor-not-allowed'
-                  :
-                  'bg-indigo-600 hover:bg-indigo-700'
+                  isSubmitting
+                    ? "bg-gray-400 cursor-not-allowed"
+                    : "bg-indigo-600 hover:bg-indigo-700"
                 }`}
             >
               {isSubmitting ? "Registering ... " : "Register"}
