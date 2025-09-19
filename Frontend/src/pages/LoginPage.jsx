@@ -2,6 +2,7 @@ import axios from "axios";
 import React, { useId, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { ImCross } from "react-icons/im";
+import { useAuth } from "../context/AuthContext";
 
 const Login = (className, ...props) => {
   const [isLoading, setisLoading] = useState(false);
@@ -16,9 +17,11 @@ const Login = (className, ...props) => {
     formState: { errors, isSubmitted },
   } = useForm({ mode: "onSubmit" });
 
+  const { login } = useAuth();
+
   const onSubmit = async (data) => {
     setisLoading(true);
-    setisError('')
+    setisError("");
     console.log(data);
 
     try {
@@ -27,29 +30,35 @@ const Login = (className, ...props) => {
         data
       );
 
-      console.log(response.status);
-      console.log("success", response.data);
+      // console.log("nice " ,response.status);
+      // console.log("success", response.data);
 
       if (response.status == 200) {
+        const access = response.data.access ?? response.data.access_token;
+        const refresh = response.data.refresh ?? response.data.refresh_token;
+
+        login({ access, refresh });
         setisLogin(true);
-      } else {
-        setisLogin(false);
+
+        setTimeout(() => {
+          setisLogin(false);
+          reset();
+        }, 1000);
       }
 
       const access = response.data.access ?? response.data.access_token;
       const refresh = response.data.refresh ?? response.data.refresh_token;
 
-      if (access){
-        localStorage.setItem("access_token" , access)
+      if (access) {
+        localStorage.setItem("access_token", access);
 
-        axios.defaults.headers.common["Authorization"] =   `Bearer ${access}`
+        axios.defaults.headers.common["Authorization"] = `Bearer ${access}`;
       }
-      if (refresh){
-        localStorage.setItem("refresh_token" , refresh);
+      if (refresh) {
+        localStorage.setItem("refresh_token", refresh);
       }
 
-
-      console.log(localStorage)
+      console.log(localStorage);
 
       setisLogin(true); // temporary disable hunxa submit button.
 
