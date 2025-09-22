@@ -1,11 +1,20 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import axiosInstance from "../Services/axios";
+import axios from "axios";
+import { getCategories } from "../Services/categoryService";
+import { getExpenses } from "../Services/expenseService";
 
 const API_KEY = "http://127.0.0.1:8000/api/expenses/";
 
 function Expenses() {
   const { user, isAuthenticated } = useAuth();
+  const [category, setCategory] = useState([]);
+  const [expense, setExpense] = useState([]);
+  const [monthlyTotal, setMonthlyTotal] = useState(0);
+  const [totalAmount, setTotalAmount] = useState(0);
+
   console.log("username is ", user?.username);
 
   const navigate = useNavigate();
@@ -13,14 +22,40 @@ function Expenses() {
   useEffect(() => {
     if (isAuthenticated) {
       const fetchData = async () => {
-        try {
-          const response = await axios.get(API_KEY);
-          console.log(response.data);
-        } catch (error) {
-          console.log("Error occured");
-        }
+        const response = await getExpenses();
+        setExpense(response);
+
+        const total = response.reduce((sum, e) => sum + Number(e.amount), 0);
+        const now = new Date();
+        const currentMonth = now.getMonth();
+        const currentYear = now.getFullYear();
+
+        const monthly = response
+          .filter((e) => {
+            const date = new Date(e.date);
+            return (
+              date.getMonth() === currentMonth &&
+              date.getFullYear() === currentYear
+            );
+          })
+          .reduce((sum, e) => sum + Number(e.amount), 0);
+
+        setMonthlyTotal(monthly);
+        setTotalAmount(total);
+
+        console.log("Monthly total:", monthly);
+        console.log("Total all time:", total);
       };
+
       fetchData();
+
+      const fetchCategories = async () => {
+        const response = await getCategories();
+        setCategory(response);
+        console.log("Categories:", response);
+      };
+
+      fetchCategories();
     }
   }, [isAuthenticated]);
 
@@ -35,12 +70,18 @@ function Expenses() {
           className="mb-6 p-6 bg-white/60 backdrop-blur-xl rounded-2xl border border-white/40 shadow-lg shadow-slate-200/50 hover:shadow-xl hover:bg-white/70 transition-all duration-300"
         >
           <div className="flex items-center space-x-3">
-            <div className="w-12 h-12 bg-gradient-to-br from-slate-400 to-slate-600 rounded-full flex items-center justify-center">
-              <span className="text-white font-semibold text-lg">U</span>
+            <div className="w-12 h-12 p-0.5 bg-gradient-to-br from-slate-400 to-slate-600 rounded-full flex items-center justify-center">
+              <span className="text-white font-semibold text-lg">
+                {" "}
+                <img
+                  className="w-12 h-12 object-center object-cover rounded-full"
+                  src="https://imgs.search.brave.com/JgJvd14hp2A9TVwriGsLFc5m0YX-d7SsFDUumpKia-A/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9tZWRp/YS5nZXR0eWltYWdl/cy5jb20vaWQvMTQw/NjE5NzczMC9waG90/by9wb3J0cmFpdC1v/Zi1hLXlvdW5nLWhh/bmRzb21lLWluZGlh/bi1tYW4uanBnP3M9/NjEyeDYxMiZ3PTAm/az0yMCZjPUNuY05V/VGJ3Nm16R3Nib2pr/czJWdDBrVjg1Tl9w/UWFJM3phU2tCUUpG/VGM9"
+                />
+              </span>
             </div>
             <div>
               <h3 className="font-semibold text-slate-800 text-lg">
-                {isAuthenticated ? user?.username : "chatgpt"}
+                {isAuthenticated ? user?.username : "No user"}
               </h3>
               <p className="text-slate-600 text-sm">Manage your account</p>
             </div>
@@ -100,7 +141,7 @@ function Expenses() {
                 </div>
                 <div className="text-right">
                   <div className="text-2xl font-bold text-slate-800">
-                    $1,234
+                    $ {monthlyTotal}
                   </div>
                   <div className="text-sm text-slate-600">This month</div>
                 </div>

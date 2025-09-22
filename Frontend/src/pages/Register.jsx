@@ -53,7 +53,6 @@ const Register = () => {
           className="mt-8 space-y-6 bg-white p-8 rounded-lg shadow-md"
         >
           <div className="space-y-4">
-            {/* Username */}
             <div>
               <input
                 {...register("username", {

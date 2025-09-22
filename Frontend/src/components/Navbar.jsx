@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { CgProfile } from "react-icons/cg";
 import axios from "axios";
@@ -11,21 +11,34 @@ function Navbar() {
   const navigate = useNavigate();
   const { user, logout, loading, isAuthenticated } = useAuth();
 
-  console.log("User", user?.username);
+  const dropdownRef = useRef(null);
 
   useEffect(() => {
     if (isAuthenticated) {
       const fetchData = async () => {
         try {
           const response = await axios.get(API_KEY);
-          console.log(response.data);
         } catch (error) {
           console.log("Error occured");
         }
       };
       fetchData();
     }
-  }, [isAuthenticated]);
+
+    const handleClickOutside = (e) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setIsOpen(false);
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isAuthenticated, isOpen]);
 
   const handleLogout = () => {
     logout();
@@ -41,12 +54,17 @@ function Navbar() {
     });
   };
 
+  const toLoginPage = () => {
+    setTimeout(() => {
+      navigate("/login");
+    }, 1000);
+  };
   return (
-    <div className="flex px-4 sm:px-8 lg:px-16 justify-between w-full h-16 items-center bg-gradient-to-r from-slate-50/90 via-white/80 to-slate-50/90 backdrop-blur-xl border-b border-white/20 shadow-lg shadow-slate-200/50 font-medium">
+    <div className="flex px-4 sm:px-8 lg:px-16 justify-between w-full h-16 items-center bg-gradient-to-r from-slate-50/90 via-white/80 to-slate-50/90 backdrop-blur-xl border-b border-white/20 shadow-lg shadow-slate-200/50 font-medium relative z-50">
       <h1 className="font-bold text-xl sm:text-2xl bg-gradient-to-r from-slate-800 via-slate-600 to-slate-800 bg-clip-text text-transparent">
         Expense Tracker
       </h1>
-      <div id="Login-drop-down" className="relative">
+      <div id="Login-drop-down" ref={dropdownRef} className="relative">
         <button
           onClick={profileOpen}
           className="p-2 rounded-full bg-white/40 backdrop-blur-sm border border-white/30 hover:bg-white/60 hover:shadow-lg hover:scale-105 transition-all duration-200 ease-out"
@@ -55,36 +73,34 @@ function Navbar() {
         </button>
 
         {isOpen && (
-          <div className="absolute right-0 mt-3 w-44 sm:w-48 bg-white/20 backdrop-blur-xl rounded-2xl border border-white/30 shadow-2xl shadow-slate-300/30 flex flex-col overflow-hidden animate-in slide-in-from-top-2 duration-200">
+          <div className="absolute right-0 top-full mt-2 w-44 sm:w-48 bg-white/95 backdrop-blur-xl rounded-2xl border border-white/30 shadow-2xl shadow-slate-300/50 flex flex-col overflow-hidden z-[9999]">
             {isAuthenticated ? (
               <>
-                <button className="px-5 py-3 text-left text-sm font-medium text-slate-700 hover:bg-white/30 hover:text-slate-800 transition-all duration-150 backdrop-blur-sm">
-                  {user?.username}
+                <button className="px-5 py-3 text-left  font-medium text-slate-700 hover:bg-slate-100/80 hover:text-slate-900 hover:shadow-sm transition-all duration-200 backdrop-blur-sm">
+                 Current user: <span className="text-green-600"> {user?.username} </span>
                 </button>
                 <button
                   onClick={handleLogout}
-                  className="px-5 py-3 text-left text-sm font-medium text-slate-700 hover:bg-white/30 hover:text-slate-800 transition-all duration-150 backdrop-blur-sm"
+                  className="px-5 py-3 text-left  font-medium text-slate-700 hover:bg-red-50/80 hover:text-red-700 hover:shadow-sm transition-all duration-200 backdrop-blur-sm"
                 >
                   Logout
                 </button>
               </>
             ) : (
               <>
-                <button className="px-5 py-3 text-left text-sm font-medium text-slate-700 hover:bg-white/30 hover:text-slate-800 transition-all duration-150 backdrop-blur-sm">
+                <button className="px-5 py-3 text-left  font-medium text-slate-700 hover:bg-slate-100/80 hover:text-slate-900 hover:shadow-sm transition-all duration-200 backdrop-blur-sm">
                   No current User
                 </button>
                 <button
-                  onClick={() => {
-                    navigate("/login");
-                  }}
-                  className="px-5 py-3 text-left text-sm font-medium text-slate-700 hover:bg-white/30 hover:text-slate-800 transition-all duration-150 backdrop-blur-sm"
+                  onClick={toLoginPage}
+                  className="px-5 py-3 text-left  font-medium text-slate-700 hover:bg-blue-50/80 hover:text-blue-700 hover:shadow-sm transition-all duration-200 backdrop-blur-sm"
                 >
                   Login
                 </button>
               </>
             )}
 
-            <button className="px-5 py-3 text-left text-sm font-medium text-slate-700 hover:bg-white/30 hover:text-slate-800 transition-all duration-150 backdrop-blur-sm">
+            <button className="px-5 py-3 text-left  font-medium text-slate-700 hover:bg-slate-100/80 hover:text-slate-900 hover:shadow-sm transition-all duration-200 backdrop-blur-sm">
               Documentation
             </button>
           </div>

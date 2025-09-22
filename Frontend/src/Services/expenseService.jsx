@@ -1,19 +1,18 @@
 import axios from "axios";
+import axiosInstance from "./axios";
 
 const API_URL = "http://127.0.0.1:8000/api/expenses/";
 const API_PAYMENTS = "http://127.0.0.1:8000/api/paymentoption/";
 
-// Helper function to get auth headers
-const getAuthHeaders = () => {
-  const token = localStorage.getItem("access_token");
-  return token ? { Authorization: `Bearer ${token}` } : {};
-};
+// // Helper function to get auth headers
+// const getAuthHeaders = () => {
+//   const token = localStorage.getItem("access_token");
+//   return token ? { Authorization: `Bearer ${token}` } : {};
+// };   commented out cause now the thing will be handled by the interceptors
 
 export async function getExpenses() {
-  try {
-    const response = await axios.get(API_URL, {
-      headers: getAuthHeaders(),
-    });
+  try { 
+    const response = await axiosInstance.get(API_URL);
     return response.data;
   } catch (error) {
     console.error("Error fetching expenses:", error);
@@ -23,9 +22,7 @@ export async function getExpenses() {
 
 export async function getExpense(id) {
   try {
-    const response = await axios.get(`${API_URL}${id}/`, {
-      headers: getAuthHeaders(),
-    });
+    const response = await axiosInstance.get(`${API_URL}${id}/`);
     return response.data;
   } catch (error) {
     console.error(`Error fetching expense ${id}:`, error);
@@ -35,9 +32,7 @@ export async function getExpense(id) {
 
 export async function createExpense(data) {
   try {
-    const response = await axios.post(API_URL, data, {
-      headers: getAuthHeaders(),
-    });
+    const response = await axiosInstance.post(API_URL, data);
     return response.data;
   } catch (error) {
     console.error("Error creating expense:", error);
@@ -47,9 +42,7 @@ export async function createExpense(data) {
 
 export async function updateExpense(id, data) {
   try {
-    const response = await axios.put(`${API_URL}${id}/`, data, {
-      headers: getAuthHeaders(),
-    });
+    const response = await axiosInstance.put(`${API_URL}${id}/` , data);
     return response.data;
   } catch (error) {
     console.error(`Error updating expense ${id}:`, error);
@@ -59,9 +52,7 @@ export async function updateExpense(id, data) {
 
 export async function deleteExpense(id) {
   try {
-    const response = await axios.delete(`${API_URL}${id}/`, {
-      headers: getAuthHeaders(),
-    });
+    const response = await axiosInstance.delete(`${API_URL}${id}/`);
     return response.data;
   } catch (error) {
     console.error(`Error deleting expense ${id}:`, error);
@@ -71,7 +62,7 @@ export async function deleteExpense(id) {
 
 export async function getPayment() {
   try {
-    const response = await axios.get(API_PAYMENTS);
+    const response = await axiosInstance.get(API_PAYMENTS);
     return response.data;
   } catch (error) {
     throw error;

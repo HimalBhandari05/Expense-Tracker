@@ -71,5 +71,4 @@ export const AuthProvider = (props) => {
   );
 };
 
-
-export const useAuth = ()=> useContext(AuthContext); // yesle context lai sajilo use garna help garxa
+export const useAuth = () => useContext(AuthContext); // yesle context lai sajilo use garna help garxa
