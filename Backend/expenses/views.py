@@ -2,18 +2,28 @@ from django.shortcuts import render
 from rest_framework.response import Response
 from django.contrib.auth.decorators import login_required
 from .models import Expenses, Categories
-from rest_framework import authentication , permissions
+from rest_framework import authentication, permissions
 from rest_framework import status
 from django.contrib.auth.models import User
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
-from .serializers import ExpenseSerializer, CategorySerializer, RegisterSerializer
-from rest_framework import viewsets, permissions  # viewsets le chai CRUD operations lai handle garxa automatically
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
+from .serializers import (
+    ExpenseSerializer,
+    CategorySerializer,
+    RegisterSerializer,
+    myTokenObject,
+)
+from rest_framework import (
+    viewsets,
+    permissions,
+)  # viewsets le chai CRUD operations lai handle garxa automatically
 
 
 class RegisterView(APIView):
     authentication_classes = []
     permission_classes = [permissions.AllowAny]
+
     def post(self, request):
         data = request.data
         serializer = RegisterSerializer(data=data)
@@ -26,59 +36,85 @@ class RegisterView(APIView):
                     "status": True,
                     "data": serializer.data,
                 },
-                status= status.HTTP_201_CREATED
+                status=status.HTTP_201_CREATED,
             )
         else:
             return Response(
-                {
-                    "message":"Invalid",
-                },
-                serializer.errors,
-                status=status.HTTP_400_BAD_REQUEST
+                {"message": "Invalid", "errors": serializer.errors},
+                status=status.HTTP_400_BAD_REQUEST,
             )
 
 
 class LoginView(APIView):
     authentication_classes = []
     permission_classes = [permissions.AllowAny]
-    
-    def post(self , request):
+
+    def post(self, request):
         data = request.data
-        username = data['username']
-        password = data['password']
-        
+        username = data["username"]
+        password = data["password"]
+
         user = User.objects.filter(username=username).first()
         if user and user.check_password(password):
-            refresh = RefreshToken.for_user(user=user)
+            refresh = myTokenObject.get_token(user)
+            access = refresh.access_token
+
             return Response(
                 {
-                    "message":"Data Validated Successfully",
-                    "access_token":str(refresh.access_token),
-                    "refresh_token":str(refresh)
+                    "username": username,
+                    "message": "Data Validated Successfully",
+                    "access_token": str(refresh.access_token),
+                    "refresh_token": str(refresh),
                 }
             )
         else:
             return Response(
                 {
-                    "message":"Invalid credentials",
+                    "message": "Invalid credentials",
                 },
-                status=status.HTTP_400_BAD_REQUEST
+                status=status.HTTP_400_BAD_REQUEST,
             )
-            
+
+
+class PaymentView(APIView):
+    authentication_classes = []
+    permission_classes = [permissions.AllowAny]
+
+    def get(self, request):
+
+        PAYMENT_METHODS = [
+            {"value": "cash", "label": "Cash"},
+            {"value": "credit_card", "label": "Credit Card"},
+            {"value": "debit_card", "label": "Debit Card"},
+            {"value": "bank_transfer", "label": "Bank Transfer"},
+            {"value": "mobile_payment", "label": "Mobile Payment"},
+            {"value": "other", "label": "Other"},
+        ]
+
+        return Response(PAYMENT_METHODS)
+
 
 class CategoryViewSet(viewsets.ModelViewSet):
-    queryset = Categories.objects.all()  # yesle Categories model ko sabai instances lai query garxa
-    serializer_class = CategorySerializer  # yesle chai kun serializer use garne bhanera specify garxa
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]  # only authenticated users can create/update/delete categories, others can only read
+    queryset = (
+        Categories.objects.all()
+    )  # yesle Categories model ko sabai instances lai query garxa
+    serializer_class = (
+        CategorySerializer  # yesle chai kun serializer use garne bhanera specify garxa
+    )
+    permission_classes = [
+        permissions.IsAuthenticatedOrReadOnly
+    ]  # only authenticated users can create/update/delete categories, others can only read
 
 
 class ExpenseViewSet(viewsets.ModelViewSet):
     serializer_class = ExpenseSerializer  # yesle chai kun serializer use garne bhanera specify garxa
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]  # only authenticated users can create/update/delete expenses, others can only read
+    permission_classes = [IsAuthenticated]  # only authenticated users can create/update/delete expenses, others can only read
 
     def get_queryset(self):
         if self.request.user.is_authenticated:
-            return Expenses.objects.filter(user=self.request.user).select_related('category')
+            return Expenses.objects.filter(user=self.request.user).select_related(
+                "category"
+            )
         else:
             return Expenses.objects.none()
         # yesle chai current logged in user ko expenses haru matra return garxa
