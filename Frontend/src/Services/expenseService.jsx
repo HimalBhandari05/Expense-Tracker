@@ -13,6 +13,7 @@ const API_PAYMENTS = "http://127.0.0.1:8000/api/paymentoption/";
 export async function getExpenses() {
   try { 
     const response = await axiosInstance.get(API_URL);
+    console.log("Expenses are" , response.data)
     return response.data;
   } catch (error) {
     console.error("Error fetching expenses:", error);
@@ -33,6 +34,7 @@ export async function getExpense(id) {
 export async function createExpense(data) {
   try {
     const response = await axiosInstance.post(API_URL, data);
+    console.log(response.data , "this is the create expense data")
     return response.data;
   } catch (error) {
     console.error("Error creating expense:", error);

@@ -7,7 +7,7 @@ function Home(){
             <header>
                 <Navbar />
             </header>
-            <main className="p-2">
+            <main>
                 <Expenses />
             </main>
         </> 
