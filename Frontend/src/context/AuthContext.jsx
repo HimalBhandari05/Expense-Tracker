@@ -20,7 +20,7 @@ function decodeJwt(token) {
       atob(payload.replace(/-/g, "+").replace(/_/g, "/"))
     );
 
-    console.log(json);
+  console.log(json);
 
     return json;
   } catch {
