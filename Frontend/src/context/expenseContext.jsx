@@ -8,8 +8,7 @@ const ExpenseContext = createContext();
 export const ExpenseProvider = ({ children }) => {
   const { isAuthenticated, loading } = useAuth();
   const [expenses, setExpenses] = useState([]);
-  const [monthlyTotal, setMontlyTotal] = useState(0);
-  const [sevenDayTotal , setSevenDayTotal] = useState(0);
+  // const [sevenDayTotal , setSevenDayTotal] = useState(0);
 
 
   console.log("Auth state:", isAuthenticated);
@@ -30,9 +29,7 @@ export const ExpenseProvider = ({ children }) => {
     fetchExpense();
   }, [isAuthenticated, loading]);
 
-  const totalExpense = () => {
-    return expenses.reduce((acc, curr) => acc + curr.amount, 0);
-  };
+  const totalExpense = expenses.reduce((acc, curr) => acc + Number(curr.amount), 0);
 
   const lastNinetyDays = 0;
 
@@ -45,6 +42,7 @@ export const ExpenseProvider = ({ children }) => {
   }).reduce((sum , e) => (sum + Number(e.amount)) , 0)
   console.log("last seven day" , lastSevenDays)
 
+  const totalExpenseList = expenses.length
 
   const thisMonth = expenses
     .filter((e) => {
@@ -55,13 +53,13 @@ export const ExpenseProvider = ({ children }) => {
     })
     .reduce((sum, e) => sum + Number(e.amount), 0);
 
-  setMontlyTotal(thisMonth)
-
   return (
     <ExpenseContext.Provider
-      value={{ expenses, setExpenses, totalExpense, thisMonth }}
+      value={{ expenses, setExpenses, totalExpense, thisMonth , lastSevenDays, totalExpenseList }}
     >
       {children}
     </ExpenseContext.Provider>
   );
 };
+
+export const useExpense = ()=> useContext(ExpenseContext);
