@@ -10,7 +10,6 @@ export const ExpenseProvider = ({ children }) => {
   const [expenses, setExpenses] = useState([]);
   // const [sevenDayTotal , setSevenDayTotal] = useState(0);
 
-
   console.log("Auth state:", isAuthenticated);
 
   const now = new Date();
@@ -29,37 +28,60 @@ export const ExpenseProvider = ({ children }) => {
     fetchExpense();
   }, [isAuthenticated, loading]);
 
-  const totalExpense = expenses.reduce((acc, curr) => acc + Number(curr.amount), 0);
+  const totalExpense = expenses.reduce(
+    (acc, curr) => acc + Number(curr.amount),
+    0
+  );
 
   const lastNinetyDays = 0;
 
-  const lastSevenDays = expenses.filter((e)=>{
-    const expenseDate = new Date(e.date);
+  function getExpenseTotal(x) {
     const today = new Date();
-    const sevenDayAgo = new Date();
-    sevenDayAgo.setDate(today.getDate() - 7)
-    return expenseDate >= sevenDayAgo && expenseDate <= today;
-  }).reduce((sum , e) => (sum + Number(e.amount)) , 0)
-  console.log("last seven day" , lastSevenDays)
+    const xDaysAgo = new Date();
+    xDaysAgo.setDate(today.getDate() - x);
 
-  const totalExpenseList = expenses.length
+    return expenses
+      .filter((e) => {
+        const expenseDate = new Date(e.date);
+        return expenseDate >= xDaysAgo && expenseDate <= today;
+      })
+      .reduce((sum, e) => sum + Number(e.amount), 0);
+  }
 
-  const thisMonth = expenses
-    .filter((e) => {
-      const date = new Date(e.date);
-      return (  
-        date.getMonth() === currentMonth && date.getFullYear() === currentYear
-      );
-    })
-    .reduce((sum, e) => sum + Number(e.amount), 0);
+  // const lastSevenDays = expenses
+  //   .filter((e) => {
+  //     const expenseDate = new Date(e.date);
+  //     const today = new Date();
+  //     const sevenDayAgo = new Date();
+  //     sevenDayAgo.setDate(today.getDate() - 7);
+  //     return expenseDate >= sevenDayAgo && expenseDate <= today;
+  //   })
+  //   .reduce((sum, e) => sum + Number(e.amount), 0);
+  // console.log("last seven day", lastSevenDays);
+
+  const totalExpenseList = expenses.length;
+
+  // const thisMonth = expenses
+  //   .filter((e) => {
+  //     const date = new Date(e.date);
+  //     return (
+  //       date.getMonth() === currentMonth && date.getFullYear() === currentYear
+  //     );
+  //   })
+  //   .reduce((sum, e) => sum + Number(e.amount), 0);
 
   return (
     <ExpenseContext.Provider
-      value={{ expenses, setExpenses, totalExpense, thisMonth , lastSevenDays, totalExpenseList }}
+      value={{
+        totalExpenseList,
+        expenses,
+        totalExpense,
+        getExpenseTotal,
+      }}
     >
       {children}
     </ExpenseContext.Provider>
   );
 };
 
-export const useExpense = ()=> useContext(ExpenseContext);
+export const useExpense = () => useContext(ExpenseContext);
