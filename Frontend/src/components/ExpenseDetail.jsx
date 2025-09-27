@@ -2,15 +2,24 @@ import React, { useState, useEffect } from "react";
 import Navbar from "./Navbar";
 import { useExpense } from "../context/expenseContext";
 import { Link } from "react-router-dom";
+import { useCategory } from "../context/categoryContext";
 
 function ExpenseDetail() {
-  const { totalExpenseList, expenses, totalExpense , getExpenseTotal } =
+  const { totalExpenseList, expenses, totalExpense, getExpenseTotal } =
     useExpense();
+
+  const { category } = useCategory();
+  console.log("category is", category);
   const [dateRange, setDateRange] = useState(30);
+  const [categorySelected, setCategorySelected] = useState('');
 
   const handleDateRange = (e) => {
     console.log("Data is: ", e.target.value);
     setDateRange(e.target.value);
+  };
+
+  const handleCategoryRange = (e) => {
+    setCategorySelected(e.target.value)
   };
 
   const sevenDayTotal = getExpenseTotal(7);
@@ -18,10 +27,18 @@ function ExpenseDetail() {
   const ninetyDayTotal = getExpenseTotal(90);
 
   let dateArray = [
-    { id : 1,  value: 7, label: "Last 7 days" },
-    { id : 2,  value: 30, label: "Last 30 days" },
-    { id : 3,   value: 90, label: "Last 90 days" },
-    { id : 4 , value: "custom", label: "Custom range" },
+    { id: 1, value: 7, label: "Last 7 days" },
+    { id: 2, value: 30, label: "Last 30 days" },
+    { id: 3, value: 90, label: "Last 90 days" },
+    { id: 4, value: "custom", label: "Custom range" },
+  ];
+
+  let categoryArray = [
+    { id: 1, value: "all", label: "All Categories" },
+    { id: 2, value: "food", label: "Food & Dining" },
+    { id: 3, value: "transport", label: "Transportation" },
+    { id: 4, value: "shopping", label: "Shopping" },
+    { id: 5, value: "entertainment", label: "Entertainment" },
   ];
 
   //   console.log("Data is given: ", dateRange)
@@ -37,7 +54,9 @@ function ExpenseDetail() {
                 <h1 className="text-3xl lg:text-4xl font-semibold text-gray-900 dark:text-gray-100 mb-2">
                   Expenses
                 </h1>
-                <p className="text-gray-600 dark:text-gray-400">Manage and track your spending</p>
+                <p className="text-gray-600 dark:text-gray-400">
+                  Manage and track your spending
+                </p>
               </div>
               <div className="flex flex-wrap gap-3">
                 <button className="px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-200 font-medium rounded-md hover:bg-gray-200 dark:hover:bg-gray-600 border border-gray-300 dark:border-gray-600">
@@ -72,8 +91,7 @@ function ExpenseDetail() {
                     {dateArray.map((opt) => (
                       <option key={opt.id} value={opt.value}>
                         {" "}
-                        {opt.label}
-                        {" "}
+                        {opt.label}{" "}
                       </option>
                     ))}
                   </select>
@@ -83,12 +101,22 @@ function ExpenseDetail() {
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
                     Category
                   </label>
-                  <select className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                    <option>All categories</option>
+                  <select
+                    onChange={handleCategoryRange}
+                    className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  >
+                    {categoryArray.map((cat) => {
+                      <option key={cat.id} value={cat.value}>
+                        {" "}
+                        {cat.label}{" "}
+                      </option>;
+                    })}
+
+                    {/* <option>All categories</option>
                     <option>Food & Dining</option>
                     <option>Transportation</option>
                     <option>Shopping</option>
-                    <option>Entertainment</option>
+                    <option>Entertainment</option> */}
                   </select>
                 </div>
 
@@ -104,14 +132,22 @@ function ExpenseDetail() {
                 </div>
 
                 <h1 className="text-gray-900 dark:text-gray-100"> Result </h1>
-                {
-                    dateRange === "7" ?
-                    <h1 className="text-gray-900 dark:text-gray-100"> {sevenDayTotal} </h1>
-                    : dateRange === "30" ?
-                    <h1 className="text-gray-900 dark:text-gray-100"> {thirtyDayTotal} </h1>
-                    :
-                    <h1 className="text-gray-900 dark:text-gray-100"> {ninetyDayTotal} </h1>
-                }
+                {dateRange === "7" ? (
+                  <h1 className="text-gray-900 dark:text-gray-100">
+                    {" "}
+                    {sevenDayTotal}{" "}
+                  </h1>
+                ) : dateRange === "30" ? (
+                  <h1 className="text-gray-900 dark:text-gray-100">
+                    {" "}
+                    {thirtyDayTotal}{" "}
+                  </h1>
+                ) : (
+                  <h1 className="text-gray-900 dark:text-gray-100">
+                    {" "}
+                    {ninetyDayTotal}{" "}
+                  </h1>
+                )}
               </div>
             </div>
 
@@ -205,6 +241,7 @@ function ExpenseDetail() {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-200 dark:divide-gray-600 bg-white dark:bg-gray-800">
+                    {/* yesma aba dynamic banaunu paryo */}
                     <tr className="hover:bg-gray-50 dark:hover:bg-gray-700">
                       <td className="px-6 py-4 text-sm font-medium text-gray-900 dark:text-gray-200">
                         #TXN001
@@ -330,11 +367,15 @@ function ExpenseDetail() {
               <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 border border-gray-200 dark:border-gray-600">
                 <div className="flex justify-between items-start mb-3">
                   <div className="flex-1">
-                    <h3 className="font-medium text-gray-900 dark:text-gray-200">#TXN001</h3>
+                    <h3 className="font-medium text-gray-900 dark:text-gray-200">
+                      #TXN001
+                    </h3>
                     <p className="text-gray-600 dark:text-gray-300 text-sm">
                       Downtown Bistro Lunch
                     </p>
-                    <p className="text-gray-500 dark:text-gray-400 text-xs mt-1">Sep 22, 2024</p>
+                    <p className="text-gray-500 dark:text-gray-400 text-xs mt-1">
+                      Sep 22, 2024
+                    </p>
                   </div>
                   <span className="text-lg font-medium text-gray-900 dark:text-gray-200">
                     $45.50
@@ -358,9 +399,15 @@ function ExpenseDetail() {
               <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 border border-gray-200 dark:border-gray-600">
                 <div className="flex justify-between items-start mb-3">
                   <div className="flex-1">
-                    <h3 className="font-medium text-gray-900 dark:text-gray-200">#TXN002</h3>
-                    <p className="text-gray-600 dark:text-gray-300 text-sm">Ride to Airport</p>
-                    <p className="text-gray-500 dark:text-gray-400 text-xs mt-1">Sep 21, 2024</p>
+                    <h3 className="font-medium text-gray-900 dark:text-gray-200">
+                      #TXN002
+                    </h3>
+                    <p className="text-gray-600 dark:text-gray-300 text-sm">
+                      Ride to Airport
+                    </p>
+                    <p className="text-gray-500 dark:text-gray-400 text-xs mt-1">
+                      Sep 21, 2024
+                    </p>
                   </div>
                   <span className="text-lg font-medium text-gray-900 dark:text-gray-200">
                     $32.80
@@ -384,11 +431,15 @@ function ExpenseDetail() {
               <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 border border-gray-200 dark:border-gray-600">
                 <div className="flex justify-between items-start mb-3">
                   <div className="flex-1">
-                    <h3 className="font-medium text-gray-900 dark:text-gray-200">#TXN003</h3>
+                    <h3 className="font-medium text-gray-900 dark:text-gray-200">
+                      #TXN003
+                    </h3>
                     <p className="text-gray-600 dark:text-gray-300 text-sm">
                       Office Supplies Bundle
                     </p>
-                    <p className="text-gray-500 dark:text-gray-400 text-xs mt-1">Sep 20, 2024</p>
+                    <p className="text-gray-500 dark:text-gray-400 text-xs mt-1">
+                      Sep 20, 2024
+                    </p>
                   </div>
                   <span className="text-lg font-medium text-gray-900 dark:text-gray-200">
                     $89.99
