@@ -9,6 +9,7 @@ import Login from "./pages/LoginPage";
 import AddExpense from "./components/AddExpense";
 import PrivateRoutes from "./utils/ProtectedRoute";
 import ExpenseDetail from "./components/ExpenseDetail";
+import Test from "./components/Test";
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
           <Route path="/expensedetail" element={ <ExpenseDetail/> } />
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/test" element={ <Test /> } />
         </Routes>
       </BrowserRouter>
     </>
