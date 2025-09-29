@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react";
 import Navbar from "./Navbar";
 import { useExpense } from "../context/expenseContext";
-import { Link } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import { useCategory } from "../context/categoryContext";
+import EditExpense from "./EditExpense";
+import { deleteExpense } from "../Services/expenseService";
 
 function ExpenseDetail() {
   const {
@@ -11,11 +13,13 @@ function ExpenseDetail() {
     totalExpense,
     getExpenseTotal,
     getExpensesByCategories,
+    setExpenses,
   } = useExpense();
 
   const { category } = useCategory();
   console.log("category is", category);
   const [dateRange, setDateRange] = useState(30);
+  const [isDeleted , setIsDeleted] = useState(false);
   const [categorySelected, setCategorySelected] = useState("All Categories");
 
   const handleDateRange = (e) => {
@@ -53,9 +57,30 @@ function ExpenseDetail() {
     { id: 6, value: "Entertainment", label: "Entertainment" },
   ];
 
+  const handleDelete = async (id)=>{
+    try{
+      const response = await deleteExpense(id);
+      console.log("Expense Deleted successfully: " , response)
+      setIsDeleted(true);
+      setExpenses((prev)=> prev.filter((exp) => exp.id != id))
+      setTimeout(() => {
+        setIsDeleted(false);
+      }, 1000);
+    }catch(error){
+      console.log("Failed to delete expense:", error)
+    }
+  }
+
   return (
     <>
       <Navbar />
+      
+      {isDeleted && (
+        <div className="fixed top-4 left-4 z-50 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg">
+          <h1> Deleted successfully</h1>
+        </div>
+      )}
+
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4 md:p-6 lg:p-8 transition-colors duration-200">
         <div className="max-w-7xl mx-auto space-y-8">
           <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 p-6 lg:p-8 shadow-sm">
@@ -211,7 +236,7 @@ function ExpenseDetail() {
                   Recent Transactions
                 </h2>
                 <span className="text-sm text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-600 px-3 py-1 rounded-full">
-                  Last updated 2 min ago
+                  Last updated {expenses.updated_at} ago
                 </span>
               </div>
             </div>
@@ -242,122 +267,42 @@ function ExpenseDetail() {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
-                    <tr className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors duration-200">
-                      <td className="px-6 py-4 text-sm font-semibold text-gray-900 dark:text-gray-200">
-                        #TXN001
-                      </td>
-                      <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">
-                        Sep 22, 2024
-                      </td>
-                      <td className="px-6 py-4 text-sm font-medium text-gray-900 dark:text-gray-200">
-                        Downtown Bistro Lunch
-                      </td>
-                      <td className="px-6 py-4">
-                        <span className="inline-flex px-3 py-1 text-xs font-semibold bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-300 rounded-full">
-                          Food
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 text-sm font-bold text-gray-900 dark:text-gray-200">
-                        $45.50
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="flex space-x-3">
-                          <button className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-200 text-sm font-semibold transition-colors duration-200">
-                            Edit
-                          </button>
-                          <button className="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-200 text-sm font-semibold transition-colors duration-200">
-                            Delete
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                    <tr className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors duration-200">
-                      <td className="px-6 py-4 text-sm font-semibold text-gray-900 dark:text-gray-200">
-                        #TXN002
-                      </td>
-                      <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">
-                        Sep 21, 2024
-                      </td>
-                      <td className="px-6 py-4 text-sm font-medium text-gray-900 dark:text-gray-200">
-                        Ride to Airport
-                      </td>
-                      <td className="px-6 py-4">
-                        <span className="inline-flex px-3 py-1 text-xs font-semibold bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 rounded-full">
-                          Transport
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 text-sm font-bold text-gray-900 dark:text-gray-200">
-                        $32.80
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="flex space-x-3">
-                          <button className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-200 text-sm font-semibold transition-colors duration-200">
-                            Edit
-                          </button>
-                          <button className="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-200 text-sm font-semibold transition-colors duration-200">
-                            Delete
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                    <tr className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors duration-200">
-                      <td className="px-6 py-4 text-sm font-semibold text-gray-900 dark:text-gray-200">
-                        #TXN003
-                      </td>
-                      <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">
-                        Sep 20, 2024
-                      </td>
-                      <td className="px-6 py-4 text-sm font-medium text-gray-900 dark:text-gray-200">
-                        Office Supplies Bundle
-                      </td>
-                      <td className="px-6 py-4">
-                        <span className="inline-flex px-3 py-1 text-xs font-semibold bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300 rounded-full">
-                          Business
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 text-sm font-bold text-gray-900 dark:text-gray-200">
-                        $89.99
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="flex space-x-3">
-                          <button className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-200 text-sm font-semibold transition-colors duration-200">
-                            Edit
-                          </button>
-                          <button className="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-200 text-sm font-semibold transition-colors duration-200">
-                            Delete
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                    <tr className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors duration-200">
-                      <td className="px-6 py-4 text-sm font-semibold text-gray-900 dark:text-gray-200">
-                        #TXN004
-                      </td>
-                      <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">
-                        Sep 19, 2024
-                      </td>
-                      <td className="px-6 py-4 text-sm font-medium text-gray-900 dark:text-gray-200">
-                        Monthly Gym Membership
-                      </td>
-                      <td className="px-6 py-4">
-                        <span className="inline-flex px-3 py-1 text-xs font-semibold bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 rounded-full">
-                          Health
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 text-sm font-bold text-gray-900 dark:text-gray-200">
-                        $75.00
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="flex space-x-3">
-                          <button className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-200 text-sm font-semibold transition-colors duration-200">
-                            Edit
-                          </button>
-                          <button className="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-200 text-sm font-semibold transition-colors duration-200">
-                            Delete
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
+                    {
+                      expenses.map((expense) => (
+                        <tr key={expense.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors duration-200">
+                          <td className="px-6 py-4 text-sm font-semibold text-gray-900 dark:text-gray-200">
+                            {expense.id}
+                          </td>
+                          <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">
+                            {expense.date}
+                          </td>
+                          <td className="px-6 py-4 text-sm font-medium text-gray-900 dark:text-gray-200">
+                            {expense.description}
+                          </td>
+                          <td className="px-6 py-4">
+                            <span className="inline-flex px-3 py-1 text-xs font-semibold bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-300 rounded-full">
+                              {expense.category.name}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 text-sm font-bold text-gray-900 dark:text-gray-200">
+                            {expense.amount}
+                          </td>
+                          <td className="px-6 py-4">
+                            <div className="flex space-x-3">
+                              <Link to={`/editexpense/${expense.id}`}>
+                                <button className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-200 text-sm font-semibold transition-colors duration-200">
+                                  Edit
+                                </button>
+                              </Link>
+                              <button onClick={()=>handleDelete(expense.id)} className="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-200 text-sm font-semibold transition-colors duration-200">
+                                Delete
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))
+                    }
+
                   </tbody>
                 </table>
               </div>
