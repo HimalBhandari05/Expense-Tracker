@@ -35,6 +35,14 @@ export const ExpenseProvider = ({ children }) => {
 
   const lastNinetyDays = 0;
 
+  function getExpensesByCategories(cata) {
+    return expenses
+      .filter((e) => {
+        return e.category.name === cata;
+      })
+      .reduce((sum, e) => sum + Number(e.amount), 0);
+  }
+
   function getExpenseTotal(x) {
     const today = new Date();
     const xDaysAgo = new Date();
@@ -46,6 +54,17 @@ export const ExpenseProvider = ({ children }) => {
         return expenseDate >= xDaysAgo && expenseDate <= today;
       })
       .reduce((sum, e) => sum + Number(e.amount), 0);
+  }
+
+  function lastUpdated (){
+    const updatedDates = expenses.map((e)=> new Date(e.updated_at));
+    const lastDate = new Date(Math.max(...updatedDates))
+
+    const currentDate = new Date();
+    const difference = currentDate - lastDate;
+    const diffMinutes = Math.floor(difference / (1000*60));
+    
+    return diffMinutes
   }
 
   // const lastSevenDays = expenses
@@ -77,6 +96,8 @@ export const ExpenseProvider = ({ children }) => {
         expenses,
         totalExpense,
         getExpenseTotal,
+        getExpensesByCategories,
+        setExpenses,
       }}
     >
       {children}

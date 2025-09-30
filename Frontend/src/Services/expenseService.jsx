@@ -42,7 +42,7 @@ export async function createExpense(data) {
   }
 }
 
-export async function updateExpense(id, data) {
+export async function  updateExpense(id, data) {
   try {
     const response = await axiosInstance.put(`${API_URL}${id}/` , data);
     return response.data;

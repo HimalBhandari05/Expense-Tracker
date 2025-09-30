@@ -10,6 +10,7 @@ import AddExpense from "./components/AddExpense";
 import PrivateRoutes from "./utils/ProtectedRoute";
 import ExpenseDetail from "./components/ExpenseDetail";
 import Test from "./components/Test";
+import EditExpense from "./components/EditExpense";
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
           <Route element={<PrivateRoutes />}>
             <Route path="/addexpenses" element={<AddExpense />} />
             <Route path="/" element={<Home />} />
+            <Route path="/editexpense/:id" element={ <EditExpense /> } />
           </Route>
           <Route path="/expensedetail" element={ <ExpenseDetail/> } />
           <Route path="/register" element={<Register />} />

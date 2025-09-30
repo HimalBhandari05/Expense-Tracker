@@ -20,10 +20,9 @@ class Expenses(models.Model):
     payment_method = models.CharField(
         max_length=20, choices=PAYMENT_METHODS, default="cash"
     )
-    description = models.TextField(blank=True, null=True)
+    description = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    name = models.CharField(max_length=200)
 
     class Meta:
         ordering = ["-date", "-created_at", "-amount"]

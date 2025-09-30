@@ -104,7 +104,7 @@ function Expenses() {
             </li>
           </div>
 
-          <div className="bg-white/60 dark:bg-gray-800/60 backdrop-blur-xl rounded-xl border border-white/40 dark:border-gray-700/40 shadow-md shadow-gray-200/40 dark:shadow-gray-900/40 overflow-hidden">
+          {/* <div className="bg-white/60 dark:bg-gray-800/60 backdrop-blur-xl rounded-xl border border-white/40 dark:border-gray-700/40 shadow-md shadow-gray-200/40 dark:shadow-gray-900/40 overflow-hidden">
             <li className="list-none p-4 hover:bg-white/40 dark:hover:bg-gray-700/40 transition-all duration-200 cursor-pointer group">
               <div className="flex items-center space-x-3">
                 <div className="w-2 h-2 bg-gradient-to-r from-gray-400 to-gray-600 dark:from-gray-500 dark:to-gray-700 rounded-full group-hover:scale-125 transition-transform duration-200"></div>
@@ -113,7 +113,7 @@ function Expenses() {
                 </span>
               </div>
             </li>
-          </div>
+          </div> */}
         </div>
       </div>
 
@@ -161,31 +161,34 @@ function Expenses() {
               </div>
             </Link>
 
-            <div className="bg-gradient-to-r from-white/40 to-white/60 dark:from-gray-700/40 dark:to-gray-600/60 backdrop-blur-sm rounded-xl p-6 border border-white/30 dark:border-gray-600/30 hover:shadow-lg dark:hover:shadow-gray-900/30 transition-all duration-300">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between">
-                <div className="flex items-center space-x-4 mb-3 sm:mb-0">
-                  <div className="w-10 h-10 bg-gradient-to-br from-gray-400 to-gray-600 dark:from-gray-500 dark:to-gray-700 rounded-lg flex items-center justify-center">
-                    <span className="text-white font-semibold text-sm">📊</span>
+            <Link to={`/report`}>
+              <div className="bg-gradient-to-r from-white/40 to-white/60 dark:from-gray-700/40 dark:to-gray-600/60 backdrop-blur-sm rounded-xl p-6 border border-white/30 dark:border-gray-600/30 hover:shadow-lg dark:hover:shadow-gray-900/30 transition-all duration-300">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between">
+                  <div className="flex items-center space-x-4 mb-3 sm:mb-0">
+                    <div className="w-10 h-10 bg-gradient-to-br from-gray-400 to-gray-600 dark:from-gray-500 dark:to-gray-700 rounded-lg flex items-center justify-center">
+                      <span className="text-white font-semibold text-sm">📊</span>
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-gray-800 dark:text-gray-200">
+                        Analytics & Reports
+                      </h3>
+                      <p className="text-gray-600 dark:text-gray-400 text-sm">
+                        Track your spending patterns
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <h3 className="font-semibold text-gray-800 dark:text-gray-200">
-                      Analytics & Reports
-                    </h3>
-                    <p className="text-gray-600 dark:text-gray-400 text-sm">
-                      Track your spending patterns
-                    </p>
-                  </div>
-                </div>
-                <div className="text-right">
-                  <div className="text-2xl font-bold text-gray-800 dark:text-gray-200">
-                    5
-                  </div>
-                  <div className="text-sm text-gray-600 dark:text-gray-400">
-                    Categories
+                  <div className="text-right">
+                    <div className="text-2xl font-bold text-gray-800 dark:text-gray-200">
+                      5
+                    </div>
+                    <div className="text-sm text-gray-600 dark:text-gray-400">
+                      Categories
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
+            </Link>
+
 
             <div
               onClick={() => {
