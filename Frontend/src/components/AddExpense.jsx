@@ -24,6 +24,7 @@ function AddExpense() {
   const selectedCategory = watch("category");
 
   useEffect(() => {
+    console.log("Token?", localStorage.getItem("access_token"));
     async function fetchCategories() {
       try {
         const data = await getCategories();

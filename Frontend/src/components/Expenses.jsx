@@ -6,6 +6,7 @@ import axios from "axios";
 import { getCategories } from "../Services/categoryService";
 import { Link } from "react-router-dom";
 import { getExpenses } from "../Services/expenseService";
+import { useExpense } from "../context/expenseContext";
 
 const API_KEY = "http://127.0.0.1:8000/api/expenses/";
 
@@ -15,6 +16,8 @@ function Expenses() {
   const [expense, setExpense] = useState([]);
   const [monthlyTotal, setMonthlyTotal] = useState(0);
   const [totalAmount, setTotalAmount] = useState(0);
+
+  const { getExpenseTotal } = useExpense();
 
   console.log("username is ", user?.username);
 
@@ -151,7 +154,7 @@ function Expenses() {
                   </div>
                   <div className="text-right">
                     <div className="text-2xl font-bold text-gray-800 dark:text-gray-200">
-                      $ {monthlyTotal}
+                      $ {getExpenseTotal(30)}
                     </div>
                     <div className="text-sm text-gray-600 dark:text-gray-400">
                       This month

@@ -18,7 +18,7 @@ function ExpenseDetail() {
 
   const { category } = useCategory();
   console.log("category is", category);
-  const [dateRange, setDateRange] = useState(30);
+  const [dateRange, setDateRange] = useState(7);
   const [isDeleted , setIsDeleted] = useState(false);
   const [categorySelected, setCategorySelected] = useState("All Categories");
 
@@ -45,7 +45,6 @@ function ExpenseDetail() {
     { id: 1, value: 7, label: "Last 7 days" },
     { id: 2, value: 30, label: "Last 30 days" },
     { id: 3, value: 90, label: "Last 90 days" },
-    { id: 4, value: "custom", label: "Custom range" },
   ];
 
   let categoryArray = [
